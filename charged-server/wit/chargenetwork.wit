@@ -1,0 +1,34 @@
+package charged:server
+
+interface api {
+  record charger-id {
+      id: string
+  }
+
+  record command {
+      charger-id: charger-id,
+      name: string,
+      params: list<string>
+  }
+
+  record charger {
+      name: string,
+      charger-id: charger-id
+  }
+
+  variant charger-result {
+      ok(charger),
+      error(string)
+  }
+
+  register:  func(charger: charger) -> charger-result
+
+  send: func(charger-id: charger-id, command: command) -> ()
+
+}
+
+world charged {
+  export api
+}
+
+

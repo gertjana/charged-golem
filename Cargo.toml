@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "charged-server",
+    "charged-worker",
+    "charged-model"
+]
+
+[profile.release]
+lto = true
+opt-level = 's'

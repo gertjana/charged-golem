@@ -1,0 +1,33 @@
+package charged:worker
+
+interface api {
+  record charger-id {
+    id: string
+  }
+
+  record charger {
+    charger-id: charger-id,
+    name: string
+  }
+
+  variant worker-result {
+    ok(string),
+    error(string)
+  }  
+
+  variant command-result {
+    ok(string),
+    error(string)
+  }
+
+  initialize: func(charger: charger) -> worker-result
+
+  command: func(command: string, params: list<string>) -> command-result
+
+}
+
+world moovables {
+  export api
+}
+
+
