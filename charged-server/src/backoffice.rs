@@ -25,4 +25,8 @@ impl BackOfficeState {
     pub fn send(&mut self, charger_id: ChargerId, command: Command) {
         send(charger_id, command);
     }
+
+    pub fn get_charger(&self, charger_id: &ChargerId) -> Option<&Charger> {
+        self.chargers.get(charger_id)
+    }
 }

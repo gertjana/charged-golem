@@ -10,6 +10,11 @@ interface api {
     name: string
   }
 
+  record command {
+    name: string,
+    params: list<string>
+  }
+
   variant worker-result {
     ok(string),
     error(string)
@@ -22,7 +27,7 @@ interface api {
 
   initialize: func(charger: charger) -> worker-result
 
-  command: func(command: string, params: list<string>) -> command-result
+  receive: func(command: command) -> command-result
 
 }
 

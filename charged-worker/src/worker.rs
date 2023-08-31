@@ -1,9 +1,10 @@
-use charger_model::Charger;
+use charger_model::{Charger, Command};
 use queues::{IsQueue, Queue};
+use crate::ocpp_handlers::_handle_unlock_connector;
 
 pub struct WorkerState {
     pub charger: Option<Charger>,
-    pub queue: Queue<(String, Vec<String>)>,
+    pub queue: Queue<Command>,
 }
 // TODO
 // - run a websocket server (not yet supported in Golem)
@@ -18,15 +19,27 @@ impl WorkerState {
         }
     }
 
-    pub fn add_to_queue(
-        &mut self,
-        name: String,
-        params: Vec<String>,
-    ) -> Result<Option<(String, Vec<String>)>, &str> {
+    pub fn add_to_queue(&mut self, command: Command) -> Result<Option<Command>, &str> {
         println!(
-            "Adding command {name} with {p} queue",
-            p = params.join(", ")
+            "Adding command {} with {} queue",
+            command.name,
+            command.params.join(", ")
         );
-        self.queue.add((name, params))
+        self.queue.add(command)
+    }
+
+    pub fn _handle_queue(&mut self) {
+        if let Ok(command) = self.queue.remove() {
+            println!(
+                "Sending command {} with {} queue",
+                command.name,
+                command.params.join(", ")
+            );
+            match command.name.as_str() {
+                "unlock_connector" => 
+                   _handle_unlock_connector(command.params),
+                _ => panic!("Unknown command {}", command.name),            
+            };
+        }
     }
 }

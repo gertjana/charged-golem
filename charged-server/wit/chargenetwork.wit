@@ -6,7 +6,6 @@ interface api {
   }
 
   record command {
-      charger-id: charger-id,
       name: string,
       params: list<string>
   }
@@ -24,6 +23,8 @@ interface api {
   register:  func(charger: charger) -> charger-result
 
   send: func(charger-id: charger-id, command: command) -> ()
+
+  authorize: func(charger-id: charger-id, token: string) -> bool
 
 }
 

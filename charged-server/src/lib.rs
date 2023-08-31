@@ -39,4 +39,13 @@ impl Api for ChargeNetWorkImpl {
             );
         })
     }
+
+    fn authorize(charger_id: WitChargerId, _token: String) -> bool {
+        with_state(|backoffice_state| {
+            // for now accept all authorizations as valid
+            backoffice_state
+                .get_charger(&conversions::from_wit_charger_id(charger_id.clone()))
+                .is_some()
+        })
+    }
 }

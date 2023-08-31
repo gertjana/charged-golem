@@ -1,7 +1,9 @@
 use bindings::*;
-use exports::charged::worker::api::{Charger as WitCharger, ChargerId as WitChargerId};
+use exports::charged::worker::api::{
+    Charger as WitCharger, ChargerId as WitChargerId, Command as WitCommand,
+};
 
-use charger_model::{Charger, ChargerId};
+use charger_model::{Charger, ChargerId, Command};
 
 pub fn from_wit_charger_id(charger_id: WitChargerId) -> ChargerId {
     ChargerId { id: charger_id.id }
@@ -13,5 +15,12 @@ pub fn from_wit_charger(charger: WitCharger) -> Charger {
         charger_id: ChargerId {
             id: from_wit_charger_id(charger.charger_id).id,
         },
+    }
+}
+
+pub fn from_wit_command(command: WitCommand) -> Command {
+    Command {
+        name: command.name,
+        params: command.params,
     }
 }

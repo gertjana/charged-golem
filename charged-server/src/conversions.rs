@@ -19,8 +19,7 @@ pub fn from_wit_charger(charger: WitCharger) -> Charger {
 
 pub fn from_wit_command(command: WitCommand) -> Command {
     Command {
-        charger_id: from_wit_charger_id(command.charger_id),
-        command: command.name,
+        name: command.name,
         params: command.params,
     }
 }

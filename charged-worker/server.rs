@@ -16,36 +16,13 @@ static GOLEM_API_TOKEN: Lazy<String, fn() -> String> = Lazy::<String, _>::new(||
             .unwrap()
 });
 
-pub fn create(charger: Charger) {
-    create_instance(charger.charger_id.clone());
-    let invocation_key = get_invocation_key(charger.charger_id.clone());
-    let body = charger.clone();
-    invoke_function::<Charger>(
-        charger.charger_id,
-        body,
-        invocation_key,
-        "initialize".to_string(),
-    )
-}
-
-pub fn send(charger_id: ChargerId, command: Command) {
+pub fn authorize(charger_id: ChargerId, token: String) -> bool {
     let invocation_key = get_invocation_key(charger_id.clone());
-    invoke_function::<Command>(charger_id, command, invocation_key, "command".to_string())
+    // _invoke_and_await_function<???>(charger_id, token, invocation_key, "authorize".to_string())
+    false
 }
 
 // API Calls
-
-fn create_instance(charger_id: ChargerId) {
-    let client = reqwest::Client::new();
-    let component_id = "charger";
-    let instance_id = format!("charger-{}", charger_id.id);
-    let url = format!("{COMP_BASE_URL}/{component_id}/instances?instance-name={instance_id}",);
-    client
-        .post(url)
-        .header("Authorization", format!("Bearer: {}", *GOLEM_API_TOKEN))
-        .send()
-        .unwrap();
-}
 
 fn get_invocation_key(charger_id: ChargerId) -> String {
     let client = reqwest::Client::new();

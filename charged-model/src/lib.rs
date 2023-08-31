@@ -13,7 +13,6 @@ pub struct Charger {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Command {
-    pub charger_id: ChargerId,
-    pub command: String,
+    pub name: String,
     pub params: Vec<String>,
 }
