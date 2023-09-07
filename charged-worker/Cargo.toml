@@ -22,3 +22,4 @@ once_cell = "1.8.0"
 charger-model = { path = "../charged-model" }
 queues = "1.0.2"
 rust-ocpp = "0.3.1"
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }

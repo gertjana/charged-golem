@@ -1,6 +1,6 @@
+use crate::ocpp_handlers::{_handle_reset, _handle_unlock_connector};
 use charger_model::{Charger, Command};
 use queues::{IsQueue, Queue};
-use crate::ocpp_handlers::_handle_unlock_connector;
 
 pub struct WorkerState {
     pub charger: Option<Charger>,
@@ -28,18 +28,27 @@ impl WorkerState {
         self.queue.add(command)
     }
 
-    pub fn _handle_queue(&mut self) {
+    pub fn _handle_queue(&mut self) -> Result<String, &'static str> {
         if let Ok(command) = self.queue.remove() {
             println!(
                 "Sending command {} with {} queue",
                 command.name,
                 command.params.join(", ")
             );
-            match command.name.as_str() {
-                "unlock_connector" => 
-                   _handle_unlock_connector(command.params),
-                _ => panic!("Unknown command {}", command.name),            
+            let result = match command.name.as_str() {
+                "unlock_connector" => {
+                    serde_json::to_string(&_handle_unlock_connector(command.params))
+                        .map_err(|_| "Error serializing response")
+                }
+                "reset" => serde_json::to_string(&_handle_reset(command.params))
+                    .map_err(|_| "Error serializing response"),
+                _ => {
+                    println!("Unknown command {}", command.name);
+                    Err::<String, &str>("Unknown command")
+                }
             };
+            return result;
         }
+        Err::<String, &str>("Queue is empty")
     }
 }

@@ -4,8 +4,8 @@ Proof of Concept idea of running a EV Charging Backend on golem
 
 ## Idea
 
-One Server component that can spin up worker components that open websocket connections to chargepoints.
+One Server component that can spin up worker components that open web-socket connections to charge points.
 
-## Sequence Diagram
+## Sequence diagram
 
-![Sequence Diagram](./charged-seq-diagram.png)
+![Sequence diagram](./charged-seq-diagram.png)
