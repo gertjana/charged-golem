@@ -1,6 +1,8 @@
+cargo_component_bindings::generate!();
+
 use bindings::*;
 use exports::charged::server::api::{
-    Api, Charger as WitCharger, ChargerId as WitChargerId, ChargerResult as WitChargerResult,
+    Guest, Charger as WitCharger, ChargerId as WitChargerId, ChargerResult as WitChargerResult,
     Command as WitCommand,
 };
 use once_cell::sync::Lazy;
@@ -21,11 +23,14 @@ fn with_state<T>(f: impl FnOnce(&mut backoffice::BackOfficeState) -> T) -> T {
     unsafe { f(&mut STATE.state) }
 }
 
-struct ChargeNetWorkImpl;
+struct Component;
 
-impl Api for ChargeNetWorkImpl {
+impl Guest for Component {
     fn register(charger: WitCharger) -> WitChargerResult {
         with_state(|backoffice_state| {
+            // executor::block_on(
+            //     backoffice_state.register_charger(conversions::from_wit_charger(charger.clone())),
+            // );
             backoffice_state.register_charger(conversions::from_wit_charger(charger.clone()));
             WitChargerResult::Ok(charger)
         })
@@ -33,10 +38,12 @@ impl Api for ChargeNetWorkImpl {
 
     fn send(charger_id: WitChargerId, command: WitCommand) {
         with_state(|backoffice_state| {
+            // executor::block_on(
             backoffice_state.send(
                 conversions::from_wit_charger_id(charger_id.clone()),
                 conversions::from_wit_command(command.clone()),
-            );
+            )
+            // );
         })
     }
 

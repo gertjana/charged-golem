@@ -17,7 +17,7 @@ static GOLEM_API_TOKEN: Lazy<String, fn() -> String> = Lazy::<String, _>::new(||
 });
 
 pub fn create(charger: Charger) {
-    create_instance(charger.charger_id.clone());
+    let _ = create_instance(charger.charger_id.clone());
     let invocation_key = get_invocation_key(charger.charger_id.clone());
     let body = charger.clone();
     invoke_function::<Charger>(
@@ -35,20 +35,23 @@ pub fn send(charger_id: ChargerId, command: Command) {
 
 // API Calls
 
-fn create_instance(charger_id: ChargerId) {
-    let client = reqwest::Client::new();
+fn create_instance(charger_id: ChargerId) -> Result<(), reqwest::Error>{
+    let client = reqwest::blocking::Client::new();
     let component_id = "charger";
     let instance_id = format!("charger-{}", charger_id.id);
     let url = format!("{COMP_BASE_URL}/{component_id}/instances?instance-name={instance_id}",);
-    client
-        .post(url)
-        .header("Authorization", format!("Bearer: {}", *GOLEM_API_TOKEN))
-        .send()
-        .unwrap();
+    if let Err(error) = client
+            .post(url)
+            .header("Authorization", format!("Bearer: {}", *GOLEM_API_TOKEN))
+            .send() {
+        Err(error)
+    } else {
+        Ok(())
+    }    
 }
 
 fn get_invocation_key(charger_id: ChargerId) -> String {
-    let client = reqwest::Client::new();
+    let client = reqwest::blocking::Client::new();
     let component_id = "charger";
     let instance_id = format!("charger-{}", charger_id.id);
     let url = format!("{COMP_BASE_URL}/{component_id}/instances/{instance_id}/key",);
@@ -65,16 +68,15 @@ fn invoke_function<S>(charger_id: ChargerId, body: S, invocation_key: String, fu
 where
     S: Serialize,
 {
-    let client = reqwest::Client::new();
+    let client = reqwest::blocking::Client::new();
     let component_id = "charger";
     let instance_id = format!("charger-{}", charger_id.id);
     let url = format!("{COMP_BASE_URL}/{component_id}/instances/{instance_id}/invoke?invocation-key={invocation_key}&function-name={function_name}");
-    client
+    let _ = client
         .post(url)
         .json(&body)
         .header("Authorization", format!("Bearer: {}", *GOLEM_API_TOKEN))
-        .send()
-        .unwrap();
+        .send();
 }
 
 fn _invoke_and_await_function<S, D>(
@@ -87,7 +89,7 @@ where
     S: Serialize,
     D: DeserializeOwned,
 {
-    let client = reqwest::Client::new();
+    let client = reqwest::blocking::Client::new();
     let component_id = "charger";
     let instance_id = format!("charger-{}", charger_id.id);
     let url = format!("{COMP_BASE_URL}/{component_id}/instances/{instance_id}/invoke-and-await?invocation-key={invocation_key}&function-name={function_name}");
@@ -95,18 +97,14 @@ where
         .post(url)
         .json(&body)
         .header("Authorization", format!("Bearer: {}", *GOLEM_API_TOKEN))
-        .send();
-    match response {
-        Ok(response) => {
-            let contents = response.text().unwrap();
-            serde_json::from_str(&contents)
-                .with_context(|| {
-                    format!("Unable to deserialise response. Body was: \"{contents}\"")
-                })
-                .unwrap()
-        }
-        Err(error) => {
-            panic!("Error: {error:?}")
-        }
-    }
+        .send()
+        .unwrap()
+        .text()
+        .unwrap();
+
+    serde_json::from_str(&response)
+        .with_context(|| {
+            format!("Unable to deserialise response. Body was: \"{response}\"")
+        })
+        .unwrap()
 }

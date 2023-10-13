@@ -5,11 +5,7 @@ edition = "2021"
 
 [lib]
 path = "src/lib.rs"
-name = "chargedserver"
 crate-type = ["cdylib"]
-
-[package.metadata.component]
-package = "component:chargedserver"
 
 [package.metadata.component.dependencies]
 
@@ -17,11 +13,11 @@ package = "component:chargedserver"
 path = "wit"
 
 [dependencies]
-wit-bindgen = { version = "0.7.0", default_features = false }
+cargo-component-bindings = { git = "https://github.com/bytecodealliance/cargo-component", rev = "e57d1d1405ed2d76f1f3d8647480dea700379ff8" }
 once_cell = "1.8.0"
 charger-model = { path = "../charged-model" }
-reqwest = { version = "0.11.6", features = ["json"], git = "https://github.com/golemcloud/reqwest", branch = "initial-wasi-impl" }
+reqwest = { version = "0.11.6", features = ["json", "blocking"], git = "https://github.com/golemcloud/reqwest", branch = "initial-wasi-impl" }
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0"
 anyhow = "1.0"
-
+futures = "0.3.28"

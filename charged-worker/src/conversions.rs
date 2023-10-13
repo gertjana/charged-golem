@@ -1,5 +1,4 @@
-use bindings::*;
-use exports::charged::worker::api::{
+use crate::bindings::exports::charged::worker::api::{
     Charger as WitCharger, ChargerId as WitChargerId, Command as WitCommand,
 };
 

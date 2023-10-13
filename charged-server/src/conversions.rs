@@ -1,8 +1,7 @@
-use bindings::*;
-use charger_model::{Charger, ChargerId, Command};
-use exports::charged::server::api::{
+use crate::bindings::exports::charged::server::api::{
     Charger as WitCharger, ChargerId as WitChargerId, Command as WitCommand,
 };
+use charger_model::{Charger, ChargerId, Command};
 
 pub fn from_wit_charger_id(charger_id: WitChargerId) -> ChargerId {
     ChargerId { id: charger_id.id }

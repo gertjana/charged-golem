@@ -1,9 +1,12 @@
-use bindings::*;
-use conversions::from_wit_charger;
-use exports::charged::worker::api::{
-    Api, Charger as WitCharger, Command as WitCommand, CommandResult as WitCommandResult,
+cargo_component_bindings::generate!();
+
+// use conversions::from_wit_charger;
+use crate::bindings::exports::charged::worker::api::{
+    Guest, Charger as WitCharger, Command as WitCommand, CommandResult as WitCommandResult,
     WorkerResult as WitWorkerResult,
 };
+use crate::conversions::from_wit_charger;
+
 use once_cell::sync::Lazy;
 mod worker;
 use worker::*;
@@ -23,9 +26,9 @@ static mut STATE: WitState = WitState {
     state: Lazy::new(worker::WorkerState::new),
 };
 
-struct ChargeWorkerImpl;
+struct Component;
 
-impl Api for ChargeWorkerImpl {
+impl Guest for Component {
     fn initialize(charger: WitCharger) -> WitWorkerResult {
         with_state(|worker_state| {
             worker_state.charger = Some(from_wit_charger(charger.clone()));
